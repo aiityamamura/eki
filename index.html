@@ -1,0 +1,886 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>断易 五行占 ― 六爻詳断</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Shippori+Mincho:wght@500;700;800&family=Noto+Serif+JP:wght@400;600&family=Zen+Kaku+Gothic+New:wght@400;500;700&display=swap" rel="stylesheet">
+<style>
+  :root{
+    --paper:#EFE6D2;
+    --paper-2:#E6D9BB;
+    --paper-3:#DCCBA3;
+    --ink:#22201B;
+    --ink-soft:#5B5245;
+    --seal:#AE3A2C;
+    --gold:#A0782C;
+    --line:#c9b98d;
+
+    --wood:#4F7A45;
+    --fire:#B23A2E;
+    --earth:#AD8331;
+    --metal:#7C7460;
+    --water:#2F5972;
+
+    --wood-bg:#E7EEDE;
+    --fire-bg:#F3E1DC;
+    --earth-bg:#F0E5CE;
+    --metal-bg:#E7E4D8;
+    --water-bg:#DEE7EC;
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+  body{
+    background:
+      radial-gradient(ellipse at top left, rgba(174,58,44,0.05), transparent 45%),
+      radial-gradient(ellipse at bottom right, rgba(47,89,114,0.05), transparent 45%),
+      var(--paper);
+    color:var(--ink);
+    font-family:'Zen Kaku Gothic New', 'Noto Serif JP', sans-serif;
+    min-height:100vh;
+    padding:28px 16px 60px;
+  }
+
+  .wrap{max-width:860px;margin:0 auto;}
+
+  /* ---------- Header ---------- */
+  header{
+    text-align:center;
+    padding:8px 0 26px;
+    border-bottom:1px solid var(--line);
+    margin-bottom:30px;
+    position:relative;
+  }
+  .eyebrow{
+    font-size:12px;
+    letter-spacing:.35em;
+    color:var(--ink-soft);
+    margin-bottom:10px;
+  }
+  h1{
+    font-family:'Shippori Mincho', serif;
+    font-weight:800;
+    font-size:clamp(30px,6vw,44px);
+    margin:0 0 8px;
+    letter-spacing:.08em;
+    color:var(--ink);
+  }
+  h1 span{color:var(--seal);}
+  .sub{
+    font-size:13px;
+    color:var(--ink-soft);
+    letter-spacing:.05em;
+  }
+  .seal-mark{
+    position:absolute;
+    top:-4px; right:6px;
+    width:46px;height:46px;
+    border:2.5px solid var(--seal);
+    border-radius:6px;
+    display:flex;align-items:center;justify-content:center;
+    color:var(--seal);
+    font-family:'Shippori Mincho',serif;
+    font-weight:800;
+    font-size:16px;
+    line-height:1;
+    transform:rotate(-3deg);
+    writing-mode:vertical-rl;
+    opacity:.85;
+  }
+
+  section{margin-bottom:40px;}
+  .sec-title{
+    display:flex;align-items:baseline;gap:10px;
+    margin-bottom:16px;
+  }
+  .sec-num{
+    font-family:'Shippori Mincho',serif;
+    color:var(--seal);
+    font-size:13px;
+    border:1px solid var(--seal);
+    border-radius:50%;
+    width:22px;height:22px;
+    display:inline-flex;align-items:center;justify-content:center;
+    flex-shrink:0;
+  }
+  .sec-title h2{
+    font-family:'Shippori Mincho',serif;
+    font-size:20px;
+    font-weight:700;
+    margin:0;
+    letter-spacing:.04em;
+  }
+  .sec-desc{
+    font-size:13px;
+    color:var(--ink-soft);
+    margin:0 0 16px 32px;
+    line-height:1.8;
+  }
+
+  .card{
+    background:rgba(255,253,246,0.5);
+    border:1px solid var(--line);
+    border-radius:10px;
+    padding:22px;
+  }
+
+  /* ---------- Five elements diagram ---------- */
+  .wuxing-layout{
+    display:flex;
+    gap:24px;
+    flex-wrap:wrap;
+    align-items:center;
+  }
+  .wuxing-svg-box{flex:0 0 auto;margin:0 auto;}
+  #wuxing-svg{width:100%;max-width:340px;height:auto;display:block;}
+  .wx-node{cursor:pointer;}
+  .wx-node circle{transition:filter .15s ease, stroke-width .15s ease;}
+  .wx-node:hover circle{filter:brightness(1.08);}
+  .wx-node text{
+    font-family:'Shippori Mincho',serif;
+    font-weight:700;
+    fill:#fff;
+    pointer-events:none;
+  }
+  .wx-node.active circle{stroke:var(--ink);stroke-width:3;}
+
+  .gen-arrow{fill:none;stroke:var(--gold);stroke-width:2.2;marker-end:url(#arrow-gold);opacity:.85;transition:opacity .15s, stroke-width .15s;}
+  .over-arrow{fill:none;stroke:var(--seal);stroke-width:1.4;stroke-dasharray:4 4;marker-end:url(#arrow-seal);opacity:.55;transition:opacity .15s, stroke-width .15s;}
+  .gen-arrow.dim, .over-arrow.dim{opacity:.12;}
+  .gen-arrow.hi{opacity:1;stroke-width:3.4;}
+  .over-arrow.hi{opacity:1;stroke-width:2.4;stroke-dasharray:0;}
+
+  .wx-info{
+    flex:1 1 260px;
+    min-width:240px;
+  }
+  .wx-info .placeholder{color:var(--ink-soft);font-size:13.5px;line-height:1.9;}
+  .wx-legend{display:flex;gap:16px;margin-bottom:14px;font-size:12px;color:var(--ink-soft);}
+  .wx-legend span{display:inline-flex;align-items:center;gap:6px;}
+  .wx-legend i{width:16px;height:2px;display:inline-block;}
+  .wx-legend i.gen{background:var(--gold);}
+  .wx-legend i.over{background:var(--seal);border-top:1px dashed var(--seal);height:0;}
+
+  .wx-detail-title{
+    font-family:'Shippori Mincho',serif;
+    font-size:22px;font-weight:800;
+    margin:0 0 10px;
+  }
+  .wx-detail-row{
+    display:flex;gap:8px;align-items:baseline;
+    font-size:14px;margin-bottom:6px;line-height:1.7;
+  }
+  .wx-tag{
+    font-size:11px;
+    padding:1px 8px;
+    border-radius:20px;
+    flex-shrink:0;
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .wx-tag.gen{background:#F4ECD8;color:var(--gold);border:1px solid var(--gold);}
+  .wx-tag.over{background:#F6E4E0;color:var(--seal);border:1px solid var(--seal);}
+
+  /* ---------- Date / 立卦日 ---------- */
+  .date-row{
+    display:flex;gap:22px;flex-wrap:wrap;align-items:flex-end;
+    margin-bottom:20px;padding-bottom:18px;
+    border-bottom:1px dashed var(--line);
+  }
+  .field label{
+    display:block;font-size:11.5px;color:var(--ink-soft);
+    margin-bottom:6px;letter-spacing:.04em;
+  }
+  input#lika-date{
+    background:#fffdf7;border:1px solid var(--line);border-radius:6px;
+    padding:9px 12px;font-size:14px;font-family:inherit;color:var(--ink);
+  }
+  .gz-display{display:flex;gap:22px;flex-wrap:wrap;}
+  .gz-item{text-align:left;}
+  .gz-item .gz-label{font-size:11px;color:var(--ink-soft);letter-spacing:.05em;}
+  .gz-item .gz-value{
+    font-family:'Shippori Mincho',serif;font-size:19px;font-weight:800;
+    display:flex;align-items:center;gap:8px;
+  }
+  .gz-note{width:100%;font-size:11px;color:#a89d89;margin-top:8px;line-height:1.6;}
+
+  /* ---------- Manual yao input ---------- */
+  .yao-input-list{display:flex;flex-direction:column;gap:8px;margin-bottom:20px;}
+  .yao-input-row{
+    display:flex;align-items:center;gap:14px;flex-wrap:wrap;
+    background:#fffdf7;border:1px solid var(--line);border-radius:8px;
+    padding:10px 14px;
+  }
+  .yao-input-row .yao-pos{
+    font-family:'Shippori Mincho',serif;font-weight:700;font-size:14px;
+    width:38px;flex-shrink:0;color:var(--ink-soft);
+  }
+  .seg{display:inline-flex;border:1px solid var(--line);border-radius:20px;overflow:hidden;flex-shrink:0;}
+  .seg button{
+    background:#fffdf7;color:var(--ink-soft);
+    padding:6px 16px;font-size:12.5px;font-weight:600;
+    border-radius:0;
+  }
+  .seg button.active.yang{background:var(--ink);color:#fdf6ee;}
+  .seg button.active.yin{background:var(--water);color:#fdf6ee;}
+  .yao-preview{width:56px;flex-shrink:0;}
+  .move-toggle{
+    display:inline-flex;align-items:center;gap:6px;
+    font-size:12.5px;color:var(--ink-soft);cursor:pointer;
+    margin-left:auto;
+  }
+  .move-toggle input{accent-color:var(--seal);width:15px;height:15px;cursor:pointer;}
+
+  button{
+    font-family:'Zen Kaku Gothic New',sans-serif;
+    cursor:pointer;
+    border:none;
+    border-radius:6px;
+    font-weight:700;
+    font-size:14px;
+    letter-spacing:.04em;
+  }
+  #cast-btn{
+    background:var(--seal);
+    color:#fdf6ee;
+    padding:11px 28px;
+    transition:transform .12s ease, background .15s;
+  }
+  #cast-btn:hover{background:#933024;}
+  #cast-btn:active{transform:scale(.97);}
+
+  /* ---------- Result ---------- */
+  #result-area{display:none;}
+  .result-header{
+    display:flex;justify-content:space-between;align-items:flex-end;
+    flex-wrap:wrap;gap:10px;
+    margin-bottom:6px;
+  }
+  .hex-name{
+    font-family:'Shippori Mincho',serif;
+    font-size:26px;font-weight:800;
+  }
+  .hex-meta{font-size:12.5px;color:var(--ink-soft);}
+  .hex-meta b{color:var(--ink);font-weight:700;}
+  .question-echo{
+    font-size:12.5px;color:var(--ink-soft);
+    margin-bottom:16px;
+    display:flex;align-items:center;flex-wrap:wrap;gap:2px;
+  }
+  .question-echo .ele-chip{font-style:normal;transform:translateY(-1px);}
+
+  .hex-table{width:100%;border-collapse:collapse;font-size:13px;}
+  .hex-table th{
+    text-align:left;font-weight:600;color:var(--ink-soft);
+    font-size:11px;letter-spacing:.03em;
+    padding:6px 8px;border-bottom:1px solid var(--line);
+  }
+  .hex-table td{
+    padding:9px 8px;
+    border-bottom:1px solid #e6dabf;
+    vertical-align:middle;
+  }
+  .hex-table tr:last-child td{border-bottom:none;}
+  .row-tag{
+    font-size:11px;font-weight:700;
+    width:22px;height:22px;border-radius:5px;
+    display:inline-flex;align-items:center;justify-content:center;
+    color:#fff;
+  }
+  .row-tag.shi{background:var(--seal);}
+  .row-tag.ying{background:var(--water);}
+  .yao-visual{width:60px;}
+  .yao-visual .bar{height:6px;border-radius:2px;background:var(--ink);}
+  .yao-visual .bar.yin{background:none;display:flex;gap:8px;}
+  .yao-visual .bar.yin i{flex:1;height:6px;border-radius:2px;background:var(--ink);display:block;}
+  .moving-mark{
+    font-size:11px;font-weight:700;color:var(--seal);
+  }
+  .day-tag{
+    font-size:10px;font-weight:700;padding:1px 6px;border-radius:4px;
+    margin-left:6px;border:1px solid currentColor;
+  }
+  .day-tag.rin{color:var(--gold);}
+  .day-tag.chong{color:var(--seal);}
+  .day-tag.kong{color:var(--metal);}
+  .ele-chip{
+    display:inline-block;font-size:11px;font-weight:700;
+    padding:1px 7px;border-radius:20px;
+  }
+  .liuqin-chip{font-size:12.5px;font-weight:600;}
+
+  .change-note{
+    margin-top:18px;padding-top:14px;border-top:1px dashed var(--line);
+    font-size:13px;color:var(--ink-soft);line-height:1.8;
+  }
+  .change-note b{color:var(--seal);}
+  .no-move{
+    margin-top:16px;font-size:13px;color:var(--ink-soft);
+  }
+
+  footer{
+    text-align:center;font-size:11.5px;color:#a89d89;
+    margin-top:50px;letter-spacing:.03em;
+  }
+
+  @media (max-width:520px){
+    .sec-desc{margin-left:0;}
+    .hex-table{font-size:12px;}
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="seal-mark">占</div>
+    <div class="eyebrow">DANEKI · WUXING DIVINATION</div>
+    <h1>断易 <span>五行</span>占</h1>
+    <div class="sub">京房納甲・六爻詳断 ― 銅銭にて卦を立てる</div>
+  </header>
+
+  <!-- 1. Manual input -->
+  <section>
+    <div class="sec-title"><span class="sec-num">一</span><h2>爻を入力する</h2></div>
+    <p class="sec-desc">立卦はアナログ（銅銭・筮竹・サイコロ等）で行い、出た爻をここに入力してください。立卦日を選ぶと月建・日辰が自動表示されます。</p>
+    <p class="sec-desc" style="margin-top:-10px;">
+      ☰（乾）・☱（兌）・☲（離）・☳（震）・☴（巽）・☵（坎）・☶（艮）・☷（坤）の八卦を入れてください。
+    </p>
+    <div class="card">
+
+      <div class="date-row">
+        <div class="field">
+          <label for="lika-date">占的</label>
+          <input id="question" type="text" placeholder="例：転職の話を進めるべきか" style="background:#fffdf7;border:1px solid var(--line);border-radius:6px;padding:9px 12px;font-size:14px;font-family:inherit;color:var(--ink);min-width:220px;">
+        </div>
+        <div class="field">
+          <label for="lika-date">立卦日</label>
+          <input id="lika-date" type="date">
+        </div>
+        <div class="gz-display" id="gz-display"></div>
+      </div>
+
+      <p class="sec-desc" style="margin:0 0 10px;">下から初爻→上爻の順に、出た爻の陰陽を選び、変爻（老陰・老陽）であれば「動」にチェックしてください。</p>
+
+      <div class="yao-input-list" id="yao-input-list"></div>
+
+      <button id="cast-btn">この爻で卦を立てる</button>
+    </div>
+  </section>
+
+  <!-- 2. Result -->
+  <section id="result-area">
+    <div class="sec-title"><span class="sec-num">二</span><h2>卦の詳断</h2></div>
+    <div class="card">
+      <div class="question-echo" id="question-echo"></div>
+      <div class="result-header">
+        <div class="hex-name" id="hex-name"></div>
+        <div class="hex-meta" id="hex-meta"></div>
+      </div>
+      <table class="hex-table">
+        <thead>
+          <tr><th></th><th>爻</th><th>世/応</th><th>納甲</th><th>五行</th><th>六親</th></tr>
+        </thead>
+        <tbody id="hex-body"></tbody>
+      </table>
+
+      <div id="change-block"></div>
+    </div>
+  </section>
+
+  <!-- 3. 五行 diagram -->
+  <section>
+    <div class="sec-title"><span class="sec-num">三</span><h2>五行相生相剋の図</h2></div>
+    <p class="sec-desc">木火土金水、五つの気の巡り。外周の実線は「相生」（生み出す関係）、内側の点線は「相剋」（打ち消す関係）を示します。要素をクリックすると詳細が表示されます。</p>
+    <div class="card">
+      <div class="wuxing-layout">
+        <div class="wuxing-svg-box">
+          <svg id="wuxing-svg" viewBox="-30 -20 460 460" xmlns="http://www.w3.org/2000/svg">
+            <defs>
+              <marker id="arrow-gold" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="7" markerHeight="7" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--gold)"/>
+              </marker>
+              <marker id="arrow-seal" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+                <path d="M0,0 L10,5 L0,10 Z" fill="var(--seal)"/>
+              </marker>
+            </defs>
+            <g id="over-arrows"></g>
+            <g id="gen-arrows"></g>
+            <g id="wx-nodes"></g>
+          </svg>
+        </div>
+        <div class="wx-info">
+          <div class="wx-legend">
+            <span><i class="gen"></i>相生（生む）</span>
+            <span><i class="over"></i>相剋（剋す）</span>
+          </div>
+          <div id="wx-detail">
+            <p class="placeholder">木・火・土・金・水のいずれかをクリックしてください。</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <footer>本アプリはコイン式断易（京房納甲）の簡易シミュレーターです。伏神・飛神・応期等の高度な判断は含みません。</footer>
+</div>
+
+<script>
+/* =========================================================
+   1. 断易データ定義（京房八宮・納甲）
+   ========================================================= */
+const TRIGRAMS = { 乾:[1,1,1], 兌:[1,1,0], 離:[1,0,1], 震:[1,0,0], 巽:[0,1,1], 坎:[0,1,0], 艮:[0,0,1], 坤:[0,0,0] };
+const TRIGRAM_BY_BITS = {};
+for (const k in TRIGRAMS) TRIGRAM_BY_BITS[TRIGRAMS[k].join('')] = k;
+
+const PALACE_ELEMENT = {乾:'金',兌:'金',離:'火',震:'木',巽:'木',坎:'水',艮:'土',坤:'土'};
+const ORDER = ['乾','兌','離','震','巽','坎','艮','坤'];
+
+const NAME_TABLE = {
+ 乾:{乾:'乾為天',兌:'澤天夬',離:'火天大有',震:'雷天大壯',巽:'風天小畜',坎:'水天需',艮:'山天大畜',坤:'地天泰'},
+ 兌:{乾:'天澤履',兌:'兌為澤',離:'火澤睽',震:'雷澤歸妹',巽:'風澤中孚',坎:'水澤節',艮:'山澤損',坤:'地澤臨'},
+ 離:{乾:'天火同人',兌:'澤火革',離:'離為火',震:'雷火豐',巽:'風火家人',坎:'水火既濟',艮:'山火賁',坤:'地火明夷'},
+ 震:{乾:'天雷無妄',兌:'澤雷隨',離:'火雷噬嗑',震:'震為雷',巽:'風雷益',坎:'水雷屯',艮:'山雷頤',坤:'地雷復'},
+ 巽:{乾:'天風姤',兌:'澤風大過',離:'火風鼎',震:'雷風恆',巽:'巽為風',坎:'水風井',艮:'山風蠱',坤:'地風升'},
+ 坎:{乾:'天水訟',兌:'澤水困',離:'火水未濟',震:'雷水解',巽:'風水渙',坎:'坎為水',艮:'山水蒙',坤:'地水師'},
+ 艮:{乾:'天山遯',兌:'澤山咸',離:'火山旅',震:'雷山小過',巽:'風山漸',坎:'水山蹇',艮:'艮為山',坤:'地山謙'},
+ 坤:{乾:'天地否',兌:'澤地萃',離:'火地晉',震:'雷地豫',巽:'風地觀',坎:'水地比',艮:'山地剝',坤:'坤為地'},
+};
+
+// 納甲：[干支, 五行] 内卦(初〜三爻) / 外卦(四〜上爻)
+const NAJIA = {
+  乾: {inner:[['甲子','水'],['甲寅','木'],['甲辰','土']], outer:[['壬午','火'],['壬申','金'],['壬戌','土']]},
+  坤: {inner:[['乙未','土'],['乙巳','火'],['乙卯','木']], outer:[['癸酉','金'],['癸亥','水'],['癸丑','土']]},
+  震: {inner:[['庚子','水'],['庚寅','木'],['庚辰','土']], outer:[['庚午','火'],['庚申','金'],['庚戌','土']]},
+  巽: {inner:[['辛丑','土'],['辛亥','水'],['辛酉','金']], outer:[['辛未','土'],['辛巳','火'],['辛卯','木']]},
+  坎: {inner:[['戊寅','木'],['戊辰','土'],['戊午','火']], outer:[['戊申','金'],['戊戌','土'],['戊子','水']]},
+  離: {inner:[['己卯','木'],['己丑','土'],['己亥','水']], outer:[['己巳','火'],['己未','土'],['己酉','金']]},
+  艮: {inner:[['丙辰','土'],['丙午','火'],['丙申','金']], outer:[['丙戌','土'],['丙子','水'],['丙寅','木']]},
+  兌: {inner:[['丁巳','火'],['丁卯','木'],['丁丑','土']], outer:[['丁未','土'],['丁酉','金'],['丁亥','水']]},
+};
+
+const STATE_LABEL = ['本宮(八純)','一世','二世','三世','四世','五世','遊魂','歸魂'];
+// 各世位における [世(0-indexed 爻位), 応(0-indexed 爻位)]
+const SHI_YING = [ [5,2], [0,3], [1,4], [2,5], [3,0], [4,1], [3,0], [2,5] ];
+
+function pureBits(trig){ const t=TRIGRAMS[trig]; return [...t,...t]; }
+function flip(bits,i){ const b=[...bits]; b[i]=1-b[i]; return b; }
+function generatePalace(trig){
+  const states=[]; let s0=pureBits(trig); states.push(s0);
+  let s1=flip(s0,0); states.push(s1);
+  let s2=flip(s1,1); states.push(s2);
+  let s3=flip(s2,2); states.push(s3);
+  let s4=flip(s3,3); states.push(s4);
+  let s5=flip(s4,4); states.push(s5);
+  let s6=flip(s5,3); states.push(s6);
+  let s7=[...s6]; s7[0]=s0[0]; s7[1]=s0[1]; s7[2]=s0[2]; states.push(s7);
+  return states;
+}
+const ALL_HEX = {};
+for (const trig of ORDER){
+  generatePalace(trig).forEach((bits,idx)=>{
+    ALL_HEX[bits.join('')] = { palaceTrig:trig, stateIdx:idx };
+  });
+}
+
+const GEN = {木:'火',火:'土',土:'金',金:'水',水:'木'};   // key generates value
+const OVER = {木:'土',土:'水',水:'火',火:'金',金:'木'};  // key overcomes value
+const LIUQIN_ORDER = {父母:0,兄弟:1,官鬼:2,妻財:3,子孫:4};
+
+function liuqin(lineEle, palaceEle){
+  if (lineEle===palaceEle) return '兄弟';
+  if (GEN[lineEle]===palaceEle) return '父母';
+  if (GEN[palaceEle]===lineEle) return '子孫';
+  if (OVER[lineEle]===palaceEle) return '官鬼';
+  if (OVER[palaceEle]===lineEle) return '妻財';
+}
+
+function decodeHexagram(bits){
+  const key = bits.join('');
+  const meta = ALL_HEX[key];
+  const lowerTrig = TRIGRAM_BY_BITS[key.slice(0,3)];
+  const upperTrig = TRIGRAM_BY_BITS[key.slice(3,6)];
+  const name = NAME_TABLE[lowerTrig][upperTrig];
+  const palaceEle = PALACE_ELEMENT[meta.palaceTrig];
+  const [shiIdx, yingIdx] = SHI_YING[meta.stateIdx];
+
+  const lines = bits.map((b,i)=>{
+    const najia = i<3 ? NAJIA[lowerTrig].inner[i] : NAJIA[upperTrig].outer[i-3];
+    const [ganzhi, ele] = najia;
+    return {
+      idx:i, yang: b===1,
+      ganzhi, ele,
+      liuqin: liuqin(ele, palaceEle),
+      isShi: i===shiIdx, isYing: i===yingIdx
+    };
+  });
+
+  return { name, palaceTrig:meta.palaceTrig, palaceEle, stateLabel:STATE_LABEL[meta.stateIdx], lowerTrig, upperTrig, lines };
+}
+
+/* =========================================================
+   2. 五行図（インタラクティブ SVG）
+   ========================================================= */
+const WX_ORDER = ['木','火','土','金','水']; // この並びが相生順（隣接＝相生）
+const WX_COLOR = {木:'var(--wood)',火:'var(--fire)',土:'var(--earth)',金:'var(--metal)',水:'var(--water)'};
+const WX_DESC = {
+  木:'樹木のように伸びやかに成長する気。計画・始動・成長の象。',
+  火:'燃え上がり照らす気。情熱・発展・拡散の象。',
+  土:'万物を受け止め育む気。安定・中心・蓄積の象。',
+  金:'鋭く引き締める気。決断・収穫・粛清の象。',
+  水:'流れて浸透する気。知恵・柔軟・潜行の象。'
+};
+
+const cx=200, cy=200, r=170;
+const pos = {};
+WX_ORDER.forEach((e,i)=>{
+  const ang = -90 + i*72;
+  const rad = ang*Math.PI/180;
+  pos[e] = { x: cx + r*Math.cos(rad), y: cy + r*Math.sin(rad) };
+});
+
+const nodesG = document.getElementById('wx-nodes');
+const genG = document.getElementById('gen-arrows');
+const overG = document.getElementById('over-arrows');
+
+function shrinkLine(p1,p2,pad){
+  const dx=p2.x-p1.x, dy=p2.y-p1.y, len=Math.hypot(dx,dy);
+  const ux=dx/len, uy=dy/len;
+  return {
+    x1:p1.x+ux*pad, y1:p1.y+uy*pad,
+    x2:p2.x-ux*pad, y2:p2.y-uy*pad
+  };
+}
+
+// 相生 arrows (adjacent, curved outward)
+WX_ORDER.forEach((e,i)=>{
+  const next = WX_ORDER[(i+1)%5];
+  const p1=pos[e], p2=pos[next];
+  const s = shrinkLine(p1,p2,34);
+  const mx=(s.x1+s.x2)/2, my=(s.y1+s.y2)/2;
+  const nx=mx-cx, ny=my-cy;
+  const norm=Math.hypot(nx,ny)||1;
+  const bow = 22;
+  const bx = mx + (nx/norm)*bow, by = my + (ny/norm)*bow;
+  const path = document.createElementNS('http://www.w3.org/2000/svg','path');
+  path.setAttribute('d', `M${s.x1},${s.y1} Q${bx},${by} ${s.x2},${s.y2}`);
+  path.setAttribute('class','gen-arrow');
+  path.dataset.from=e; path.dataset.to=next;
+  genG.appendChild(path);
+});
+
+// 相剋 arrows (skip one, straight through center area)
+WX_ORDER.forEach((e,i)=>{
+  const target = WX_ORDER[(i+2)%5];
+  const p1=pos[e], p2=pos[target];
+  const s = shrinkLine(p1,p2,32);
+  const line = document.createElementNS('http://www.w3.org/2000/svg','line');
+  line.setAttribute('x1',s.x1); line.setAttribute('y1',s.y1);
+  line.setAttribute('x2',s.x2); line.setAttribute('y2',s.y2);
+  line.setAttribute('class','over-arrow');
+  line.dataset.from=e; line.dataset.to=target;
+  overG.appendChild(line);
+});
+
+// nodes
+WX_ORDER.forEach(e=>{
+  const p=pos[e];
+  const g=document.createElementNS('http://www.w3.org/2000/svg','g');
+  g.setAttribute('class','wx-node');
+  g.dataset.ele=e;
+  g.innerHTML = `<circle cx="${p.x}" cy="${p.y}" r="30" fill="${WX_COLOR[e]}"></circle>
+                 <text x="${p.x}" y="${p.y+8}" text-anchor="middle" font-size="22">${e}</text>`;
+  g.addEventListener('click', ()=>selectElement(e));
+  nodesG.appendChild(g);
+});
+
+function selectElement(e){
+  document.querySelectorAll('.wx-node').forEach(n=>n.classList.toggle('active', n.dataset.ele===e));
+  document.querySelectorAll('.gen-arrow').forEach(a=>{
+    const rel = a.dataset.from===e || a.dataset.to===e;
+    a.classList.toggle('hi', a.dataset.from===e);
+    a.classList.toggle('dim', !rel);
+  });
+  document.querySelectorAll('.over-arrow').forEach(a=>{
+    const rel = a.dataset.from===e || a.dataset.to===e;
+    a.classList.toggle('hi', a.dataset.from===e);
+    a.classList.toggle('dim', !rel);
+  });
+
+  const generates = GEN[e];
+  const generatedBy = Object.keys(GEN).find(k=>GEN[k]===e);
+  const overcomes = OVER[e];
+  const overcomeBy = Object.keys(OVER).find(k=>OVER[k]===e);
+
+  document.getElementById('wx-detail').innerHTML = `
+    <div class="wx-detail-title" style="color:${WX_COLOR[e]}">${e}</div>
+    <p style="font-size:13px;color:var(--ink-soft);margin:0 0 12px;line-height:1.8;">${WX_DESC[e]}</p>
+    <div class="wx-detail-row"><span class="wx-tag gen">相生</span> ${e}は${generates}を生む（${e}生${generates}）</div>
+    <div class="wx-detail-row"><span class="wx-tag gen">相生</span> ${generatedBy}は${e}を生む（${generatedBy}生${e}）</div>
+    <div class="wx-detail-row"><span class="wx-tag over">相剋</span> ${e}は${overcomes}を剋す（${e}剋${overcomes}）</div>
+    <div class="wx-detail-row"><span class="wx-tag over">相剋</span> ${overcomeBy}は${e}を剋す（${overcomeBy}剋${e}）</div>
+  `;
+}
+
+/* =========================================================
+   3. 月建・日辰の計算（干支暦・簡易節気境界）
+   ========================================================= */
+const STEMS = ['甲','乙','丙','丁','戊','己','庚','辛','壬','癸'];
+const BRANCHES = ['子','丑','寅','卯','辰','巳','午','未','申','酉','戌','亥'];
+const BRANCH_ELEMENT = {子:'水',丑:'土',寅:'木',卯:'木',辰:'土',巳:'火',午:'火',未:'土',申:'金',酉:'金',戌:'土',亥:'水'};
+const STEM_ELEMENT = {甲:'木',乙:'木',丙:'火',丁:'火',戊:'土',己:'土',庚:'金',辛:'金',壬:'水',癸:'水'};
+const CHONG = {子:'午',丑:'未',寅:'申',卯:'酉',辰:'戌',巳:'亥',午:'子',未:'丑',申:'寅',酉:'卯',戌:'辰',亥:'巳'};
+
+function toJDN(y,m,d){
+  const a = Math.floor((14-m)/12);
+  const y2 = y + 4800 - a;
+  const m2 = m + 12*a - 3;
+  return d + Math.floor((153*m2+2)/5) + 365*y2 + Math.floor(y2/4) - Math.floor(y2/100) + Math.floor(y2/400) - 32045;
+}
+function getDayGanzhi(dateObj){
+  const jdn = toJDN(dateObj.getFullYear(), dateObj.getMonth()+1, dateObj.getDate());
+  const idx = ((jdn+49)%60+60)%60;
+  return { stem:STEMS[idx%10], branch:BRANCHES[idx%12], idx };
+}
+function getXunKong(idx){
+  const groupStart = Math.floor(idx/10)*10;
+  const used = new Set();
+  for (let k=0;k<10;k++) used.add(BRANCHES[(groupStart+k)%12]);
+  return BRANCHES.filter(b=>!used.has(b));
+}
+function getYearGanzhi(dateObj){
+  let y = dateObj.getFullYear();
+  const lichun = new Date(y,1,4);
+  if (dateObj < lichun) y -= 1;
+  const idx = ((y-1984)%60+60)%60;
+  return { stem:STEMS[idx%10], branch:BRANCHES[idx%12] };
+}
+// 簡易節気境界（固定日付による近似。実際の節入りは年により±1日程度前後します）
+function getMonthBranch(dateObj){
+  const y = dateObj.getFullYear();
+  const bounds = [
+    {date:new Date(y-1,11,7), branch:'子'},  // 大雪
+    {date:new Date(y,0,6),    branch:'丑'},  // 小寒
+    {date:new Date(y,1,4),    branch:'寅'},  // 立春
+    {date:new Date(y,2,6),    branch:'卯'},  // 驚蟄
+    {date:new Date(y,3,5),    branch:'辰'},  // 清明
+    {date:new Date(y,4,6),    branch:'巳'},  // 立夏
+    {date:new Date(y,5,6),    branch:'午'},  // 芒種
+    {date:new Date(y,6,7),    branch:'未'},  // 小暑
+    {date:new Date(y,7,8),    branch:'申'},  // 立秋
+    {date:new Date(y,8,8),    branch:'酉'},  // 白露
+    {date:new Date(y,9,8),    branch:'戌'},  // 寒露
+    {date:new Date(y,10,7),   branch:'亥'},  // 立冬
+    {date:new Date(y,11,7),   branch:'子'},  // 大雪
+  ];
+  let result = bounds[0].branch;
+  for (const b of bounds){ if (dateObj >= b.date) result = b.branch; else break; }
+  return result;
+}
+// 五虎遁：年干から寅月の月干を求め、そこから対象月まで順に数える
+const WUHUDUN = {甲:'丙',己:'丙', 乙:'戊',庚:'戊', 丙:'庚',辛:'庚', 丁:'壬',壬:'壬', 戊:'甲',癸:'甲'};
+const BRANCH_FROM_YIN = ['寅','卯','辰','巳','午','未','申','酉','戌','亥','子','丑'];
+function getMonthGanzhi(dateObj, yearStem){
+  const branch = getMonthBranch(dateObj);
+  const yinStemIdx = STEMS.indexOf(WUHUDUN[yearStem]);
+  const offset = BRANCH_FROM_YIN.indexOf(branch);
+  const stemIdx = (yinStemIdx + offset) % 10;
+  return { stem:STEMS[stemIdx], branch };
+}
+function calcCalendarInfo(dateStr){
+  const [y,m,d] = dateStr.split('-').map(Number);
+  const dateObj = new Date(y, m-1, d);
+  const year = getYearGanzhi(dateObj);
+  const month = getMonthGanzhi(dateObj, year.stem);
+  const day = getDayGanzhi(dateObj);
+  const xunkong = getXunKong(day.idx);
+  return { year, month, day, xunkong };
+}
+
+function renderGzDisplay(dateStr){
+  const info = calcCalendarInfo(dateStr);
+  document.getElementById('gz-display').innerHTML = `
+    <div class="gz-item">
+      <div class="gz-label">月建</div>
+      <div class="gz-value">${info.month.stem}${info.month.branch}<span class="ele-chip" style="${eleChipStyle(BRANCH_ELEMENT[info.month.branch])}">${BRANCH_ELEMENT[info.month.branch]}</span></div>
+    </div>
+    <div class="gz-item">
+      <div class="gz-label">日辰</div>
+      <div class="gz-value">${info.day.stem}${info.day.branch}<span class="ele-chip" style="${eleChipStyle(BRANCH_ELEMENT[info.day.branch])}">${BRANCH_ELEMENT[info.day.branch]}</span></div>
+    </div>
+    <div class="gz-item">
+      <div class="gz-label">空亡（旬空）</div>
+      <div class="gz-value" style="font-size:17px;color:var(--seal);">${info.xunkong.join('・')}</div>
+    </div>
+    <div class="gz-item">
+      <div class="gz-label">年（参考）</div>
+      <div class="gz-value" style="font-size:15px;">${info.year.stem}${info.year.branch}</div>
+    </div>
+    <div class="gz-note">※ 月建は節入り日の簡易近似（固定日付）です。実際の節入り時刻とは前後1日程度ずれる場合があります。年は立春を境に切り替えています。</div>
+  `;
+  return info;
+}
+
+const dateInput = document.getElementById('lika-date');
+const today = new Date();
+dateInput.value = today.toISOString().slice(0,10);
+renderGzDisplay(dateInput.value);
+dateInput.addEventListener('change', () => renderGzDisplay(dateInput.value));
+
+/* =========================================================
+   4. 手動で爻を入力する
+   ========================================================= */
+const YAO_LABELS = ['初爻','二爻','三爻','四爻','五爻','上爻'];
+const lineState = [0,1,2,3,4,5].map(()=> ({yang:true, moving:false}));
+
+const yaoList = document.getElementById('yao-input-list');
+function renderYaoInputs(){
+  yaoList.innerHTML = '';
+  for (let i=5;i>=0;i--){ // 上爻を上に表示
+    const st = lineState[i];
+    const row = document.createElement('div');
+    row.className = 'yao-input-row';
+    row.innerHTML = `
+      <div class="yao-pos">${YAO_LABELS[i]}</div>
+      <div class="seg" data-idx="${i}">
+        <button type="button" class="yang-btn ${st.yang?'active yang':''}" data-val="yang">陽</button>
+        <button type="button" class="yin-btn ${!st.yang?'active yin':''}" data-val="yin">陰</button>
+      </div>
+      <div class="yao-visual yao-preview" id="preview-${i}"></div>
+      <label class="move-toggle">
+        <input type="checkbox" data-idx="${i}" class="move-check" ${st.moving?'checked':''}>
+        変爻（老陰・老陽）
+      </label>
+    `;
+    yaoList.appendChild(row);
+  }
+  updateAllPreviews();
+
+  yaoList.querySelectorAll('.seg button').forEach(btn=>{
+    btn.addEventListener('click', (e)=>{
+      const idx = Number(e.target.closest('.seg').dataset.idx);
+      lineState[idx].yang = (e.target.dataset.val === 'yang');
+      renderYaoInputs();
+    });
+  });
+  yaoList.querySelectorAll('.move-check').forEach(cb=>{
+    cb.addEventListener('change', (e)=>{
+      const idx = Number(e.target.dataset.idx);
+      lineState[idx].moving = e.target.checked;
+    });
+  });
+}
+function updateAllPreviews(){
+  lineState.forEach((st,i)=>{
+    const el = document.getElementById(`preview-${i}`);
+    if (el) el.innerHTML = yaoSvg(st.yang);
+  });
+}
+renderYaoInputs();
+
+function yaoSvg(yang){
+  if (yang) return `<div class="bar"></div>`;
+  return `<div class="bar yin"><i></i><i></i></div>`;
+}
+
+/* =========================================================
+   5. 卦を確定する
+   ========================================================= */
+const castBtn = document.getElementById('cast-btn');
+const resultArea = document.getElementById('result-area');
+
+castBtn.addEventListener('click', () => {
+  const bits = lineState.map(st => st.yang ? 1 : 0);
+  const moving = lineState.reduce((arr,st,i)=>{ if (st.moving) arr.push(i); return arr; }, []);
+  const info = calcCalendarInfo(dateInput.value);
+  renderResult(bits, moving, info);
+});
+
+function eleChipStyle(ele){
+  const map = {
+    木:['var(--wood)','var(--wood-bg)'], 火:['var(--fire)','var(--fire-bg)'],
+    土:['var(--earth)','var(--earth-bg)'], 金:['var(--metal)','var(--metal-bg)'],
+    水:['var(--water)','var(--water-bg)']
+  };
+  const [c,bg] = map[ele];
+  return `color:${c};background:${bg};`;
+}
+function liuqinColor(lq){
+  const map = {父母:'var(--water)',兄弟:'var(--metal)',官鬼:'var(--seal)',妻財:'var(--wood)',子孫:'var(--gold)'};
+  return map[lq] || 'var(--ink)';
+}
+
+function buildHexRows(hex, movingSet, dayBranch, xunkong){
+  // 上爻(index5)→初爻(index0) の順で表示
+  let html = '';
+  for (let i=5;i>=0;i--){
+    const l = hex.lines[i];
+    const lineBranch = l.ganzhi.charAt(1);
+    const tag = l.isShi ? `<span class="row-tag shi">世</span>` : l.isYing ? `<span class="row-tag ying">応</span>` : '';
+    const moveMark = movingSet && movingSet.has(i) ? `<span class="moving-mark">${l.yang?'○→':'✕→'}</span>` : '';
+    let dayTag = '';
+    if (dayBranch){
+      if (lineBranch === dayBranch) dayTag += `<span class="day-tag rin">臨日</span>`;
+      else if (CHONG[lineBranch] === dayBranch) dayTag += `<span class="day-tag chong">日破/冲</span>`;
+    }
+    if (xunkong && xunkong.includes(lineBranch)) dayTag += `<span class="day-tag kong">空亡</span>`;
+    html += `<tr>
+      <td>${tag}</td>
+      <td class="yao-visual">${yaoSvg(l.yang)} ${moveMark}</td>
+      <td></td>
+      <td>${l.ganzhi}${dayTag}</td>
+      <td><span class="ele-chip" style="${eleChipStyle(l.ele)}">${l.ele}</span></td>
+      <td><span class="liuqin-chip" style="color:${liuqinColor(l.liuqin)}">${l.liuqin}</span></td>
+    </tr>`;
+  }
+  return html;
+}
+
+function renderResult(bits, moving, calInfo){
+  const hex = decodeHexagram(bits);
+  const movingSet = new Set(moving);
+  const dayBranch = calInfo.day.branch;
+  const xunkong = calInfo.xunkong;
+
+  document.getElementById('question-echo').innerHTML =
+    (document.getElementById('question').value.trim()
+      ? `占的：${document.getElementById('question').value.trim()}　／　`
+      : '') +
+    `立卦日：${dateInput.value}　` +
+    `月建：${calInfo.month.stem}${calInfo.month.branch}<span class="ele-chip" style="${eleChipStyle(BRANCH_ELEMENT[calInfo.month.branch])}">${BRANCH_ELEMENT[calInfo.month.branch]}</span>　` +
+    `日辰：${calInfo.day.stem}${calInfo.day.branch}<span class="ele-chip" style="${eleChipStyle(BRANCH_ELEMENT[calInfo.day.branch])}">${BRANCH_ELEMENT[calInfo.day.branch]}</span>　` +
+    `空亡：${xunkong.join('・')}`;
+
+  document.getElementById('hex-name').textContent = hex.name;
+  document.getElementById('hex-meta').innerHTML =
+    `<b>${hex.palaceTrig}宮</b>（宮の五行：${hex.palaceEle}）／ ${hex.stateLabel}`;
+
+  document.getElementById('hex-body').innerHTML = buildHexRows(hex, movingSet, dayBranch, xunkong);
+
+  const changeBlock = document.getElementById('change-block');
+  if (moving.length === 0){
+    changeBlock.innerHTML = `<div class="no-move">変爻はありません。本卦のまま詳断します。</div>`;
+  } else {
+    const changedBits = bits.map((b,i)=> movingSet.has(i) ? (1-b) : b);
+    const changedHex = decodeHexagram(changedBits);
+    changeBlock.innerHTML = `
+      <div class="change-note">
+        <b>変爻あり（${moving.map(i=>['初','二','三','四','五','上'][i]+'爻').join('・')}）</b>：
+        本卦「${hex.name}」は之卦「${changedHex.name}」（${changedHex.palaceTrig}宮・${changedHex.stateLabel}）へと変化します。
+      </div>
+      <table class="hex-table" style="margin-top:10px;">
+        <thead><tr><th></th><th>爻</th><th>世/応</th><th>納甲</th><th>五行</th><th>六親</th></tr></thead>
+        <tbody>${buildHexRows(changedHex, null, dayBranch, xunkong)}</tbody>
+      </table>
+    `;
+  }
+
+  resultArea.style.display = 'block';
+  resultArea.scrollIntoView({behavior:'smooth', block:'start'});
+}
+</script>
+</body>
+</html>
