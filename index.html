@@ -29,6 +29,13 @@
     --earth-bg:#F0E5CE;
     --metal-bg:#E7E4D8;
     --water-bg:#DEE7EC;
+
+    --qinglong:#3E7A52;  --qinglong-bg:#E2EEE2;
+    --zhuque:#B23A2E;    --zhuque-bg:#F3E1DC;
+    --gouchen:#A9822F;   --gouchen-bg:#F0E5CE;
+    --tengshe:#6B4C7A;   --tengshe-bg:#EAE1EE;
+    --baihu:#726B58;     --baihu-bg:#E9E6DA;
+    --xuanwu:#2C4258;    --xuanwu-bg:#DFE5EA;
   }
 
   *{box-sizing:border-box;}
@@ -382,7 +389,7 @@
       </div>
       <table class="hex-table">
         <thead>
-          <tr><th></th><th>爻</th><th>世/応</th><th>納甲</th><th>五行</th><th>六親</th></tr>
+          <tr><th>六神</th><th></th><th>爻</th><th>世/応</th><th>納甲</th><th>五行</th><th>六親</th></tr>
         </thead>
         <tbody id="hex-body"></tbody>
       </table>
@@ -651,6 +658,13 @@ function getXunKong(idx){
   for (let k=0;k<10;k++) used.add(BRANCHES[(groupStart+k)%12]);
   return BRANCHES.filter(b=>!used.has(b));
 }
+// 六神（装六神法）：日干により初爻の神が決まり、上へ順に巡る
+const SIX_SPIRITS = ['青龍','朱雀','勾陳','螣蛇','白虎','玄武'];
+const SPIRIT_START_BY_STEM = {甲:0,乙:0,丙:1,丁:1,戊:2,己:3,庚:4,辛:4,壬:5,癸:5};
+function getSixSpirits(dayStem){
+  const start = SPIRIT_START_BY_STEM[dayStem];
+  return [0,1,2,3,4,5].map(i => SIX_SPIRITS[(start+i)%6]);
+}
 function getYearGanzhi(dateObj){
   let y = dateObj.getFullYear();
   const lichun = new Date(y,1,4);
@@ -697,7 +711,8 @@ function calcCalendarInfo(dateStr){
   const month = getMonthGanzhi(dateObj, year.stem);
   const day = getDayGanzhi(dateObj);
   const xunkong = getXunKong(day.idx);
-  return { year, month, day, xunkong };
+  const sixSpirits = getSixSpirits(day.stem);
+  return { year, month, day, xunkong, sixSpirits };
 }
 
 function renderGzDisplay(dateStr){
@@ -813,7 +828,20 @@ function liuqinColor(lq){
   return map[lq] || 'var(--ink)';
 }
 
-function buildHexRows(hex, movingSet, dayBranch, xunkong){
+function spiritChipStyle(sp){
+  const map = {
+    青龍:['var(--qinglong)','var(--qinglong-bg)'],
+    朱雀:['var(--zhuque)','var(--zhuque-bg)'],
+    勾陳:['var(--gouchen)','var(--gouchen-bg)'],
+    螣蛇:['var(--tengshe)','var(--tengshe-bg)'],
+    白虎:['var(--baihu)','var(--baihu-bg)'],
+    玄武:['var(--xuanwu)','var(--xuanwu-bg)']
+  };
+  const [c,bg] = map[sp];
+  return `color:${c};background:${bg};`;
+}
+
+function buildHexRows(hex, movingSet, dayBranch, xunkong, sixSpirits){
   // 上爻(index5)→初爻(index0) の順で表示
   let html = '';
   for (let i=5;i>=0;i--){
@@ -827,7 +855,9 @@ function buildHexRows(hex, movingSet, dayBranch, xunkong){
       else if (CHONG[lineBranch] === dayBranch) dayTag += `<span class="day-tag chong">日破/冲</span>`;
     }
     if (xunkong && xunkong.includes(lineBranch)) dayTag += `<span class="day-tag kong">空亡</span>`;
+    const spirit = sixSpirits ? sixSpirits[i] : '';
     html += `<tr>
+      <td>${spirit ? `<span class="ele-chip" style="${spiritChipStyle(spirit)}">${spirit}</span>` : ''}</td>
       <td>${tag}</td>
       <td class="yao-visual">${yaoSvg(l.yang)} ${moveMark}</td>
       <td></td>
@@ -844,6 +874,7 @@ function renderResult(bits, moving, calInfo){
   const movingSet = new Set(moving);
   const dayBranch = calInfo.day.branch;
   const xunkong = calInfo.xunkong;
+  const sixSpirits = calInfo.sixSpirits;
 
   document.getElementById('question-echo').innerHTML =
     (document.getElementById('question').value.trim()
@@ -858,7 +889,7 @@ function renderResult(bits, moving, calInfo){
   document.getElementById('hex-meta').innerHTML =
     `<b>${hex.palaceTrig}宮</b>（宮の五行：${hex.palaceEle}）／ ${hex.stateLabel}`;
 
-  document.getElementById('hex-body').innerHTML = buildHexRows(hex, movingSet, dayBranch, xunkong);
+  document.getElementById('hex-body').innerHTML = buildHexRows(hex, movingSet, dayBranch, xunkong, sixSpirits);
 
   const changeBlock = document.getElementById('change-block');
   if (moving.length === 0){
@@ -872,11 +903,12 @@ function renderResult(bits, moving, calInfo){
         本卦「${hex.name}」は之卦「${changedHex.name}」（${changedHex.palaceTrig}宮・${changedHex.stateLabel}）へと変化します。
       </div>
       <table class="hex-table" style="margin-top:10px;">
-        <thead><tr><th></th><th>爻</th><th>世/応</th><th>納甲</th><th>五行</th><th>六親</th></tr></thead>
-        <tbody>${buildHexRows(changedHex, null, dayBranch, xunkong)}</tbody>
+        <thead><tr><th>六神</th><th></th><th>爻</th><th>世/応</th><th>納甲</th><th>五行</th><th>六親</th></tr></thead>
+        <tbody>${buildHexRows(changedHex, null, dayBranch, xunkong, sixSpirits)}</tbody>
       </table>
     `;
   }
+
 
   resultArea.style.display = 'block';
   resultArea.scrollIntoView({behavior:'smooth', block:'start'});
