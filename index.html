@@ -318,6 +318,11 @@
     padding:1px 7px;border-radius:20px;
   }
   .liuqin-chip{font-size:12.5px;font-weight:600;}
+  .fushen-note{
+    display:flex;align-items:center;gap:4px;flex-wrap:wrap;
+    font-size:10.5px;color:var(--ink-soft);margin-top:4px;
+  }
+  .fushen-note .ele-chip, .fushen-note .liuqin-chip{font-size:10px;padding:0 5px;}
 
   .change-note{
     margin-top:18px;padding-top:14px;border-top:1px dashed var(--line);
@@ -432,7 +437,7 @@
     </div>
   </section>
 
-  <footer>本アプリはコイン式断易（京房納甲）の簡易シミュレーターです。伏神・飛神・応期等の高度な判断は含みません。</footer>
+  <footer>本アプリは断易（京房納甲）の簡易詳断ツールです。六神・伏神まで表示しますが、応期の判断等は含みません。</footer>
 </div>
 
 <script>
@@ -665,6 +670,21 @@ function getSixSpirits(dayStem){
   const start = SPIRIT_START_BY_STEM[dayStem];
   return [0,1,2,3,4,5].map(i => SIX_SPIRITS[(start+i)%6]);
 }
+// 伏神：本卦に現れない六親を、同宮の本宮首卦（八純卦）の同じ爻位から借りる
+function getFuShen(hex){
+  const pureHex = decodeHexagram(pureBits(hex.palaceTrig));
+  const visible = new Set(hex.lines.map(l => l.liuqin));
+  const result = {};
+  for (let i=0;i<6;i++){
+    if (hex.lines[i].ganzhi !== pureHex.lines[i].ganzhi){
+      const hiddenCat = pureHex.lines[i].liuqin;
+      if (!visible.has(hiddenCat)){
+        result[i] = { ganzhi: pureHex.lines[i].ganzhi, ele: pureHex.lines[i].ele, liuqin: hiddenCat };
+      }
+    }
+  }
+  return result;
+}
 function getYearGanzhi(dateObj){
   let y = dateObj.getFullYear();
   const lichun = new Date(y,1,4);
@@ -841,7 +861,7 @@ function spiritChipStyle(sp){
   return `color:${c};background:${bg};`;
 }
 
-function buildHexRows(hex, movingSet, dayBranch, xunkong, sixSpirits){
+function buildHexRows(hex, movingSet, dayBranch, xunkong, sixSpirits, fushenMap){
   // 上爻(index5)→初爻(index0) の順で表示
   let html = '';
   for (let i=5;i>=0;i--){
@@ -856,12 +876,14 @@ function buildHexRows(hex, movingSet, dayBranch, xunkong, sixSpirits){
     }
     if (xunkong && xunkong.includes(lineBranch)) dayTag += `<span class="day-tag kong">空亡</span>`;
     const spirit = sixSpirits ? sixSpirits[i] : '';
+    const fs = fushenMap && fushenMap[i];
+    const fushenHtml = fs ? `<div class="fushen-note">伏：${fs.ganzhi}<span class="ele-chip" style="${eleChipStyle(fs.ele)}">${fs.ele}</span><span class="liuqin-chip" style="color:${liuqinColor(fs.liuqin)}">${fs.liuqin}</span></div>` : '';
     html += `<tr>
       <td>${spirit ? `<span class="ele-chip" style="${spiritChipStyle(spirit)}">${spirit}</span>` : ''}</td>
       <td>${tag}</td>
       <td class="yao-visual">${yaoSvg(l.yang)} ${moveMark}</td>
       <td></td>
-      <td>${l.ganzhi}${dayTag}</td>
+      <td>${l.ganzhi}${dayTag}${fushenHtml}</td>
       <td><span class="ele-chip" style="${eleChipStyle(l.ele)}">${l.ele}</span></td>
       <td><span class="liuqin-chip" style="color:${liuqinColor(l.liuqin)}">${l.liuqin}</span></td>
     </tr>`;
@@ -889,7 +911,7 @@ function renderResult(bits, moving, calInfo){
   document.getElementById('hex-meta').innerHTML =
     `<b>${hex.palaceTrig}宮</b>（宮の五行：${hex.palaceEle}）／ ${hex.stateLabel}`;
 
-  document.getElementById('hex-body').innerHTML = buildHexRows(hex, movingSet, dayBranch, xunkong, sixSpirits);
+  document.getElementById('hex-body').innerHTML = buildHexRows(hex, movingSet, dayBranch, xunkong, sixSpirits, getFuShen(hex));
 
   const changeBlock = document.getElementById('change-block');
   if (moving.length === 0){
